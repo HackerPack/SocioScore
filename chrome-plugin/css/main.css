@@ -1,0 +1,82 @@
+.hoya-name{    
+	color: white;
+	padding: 3px;
+	border-radius: 15px;
+	margin: 3px;
+	font-size: 12px;
+}
+
+.hoya-name.red{
+	background: #f44336;
+}
+
+.hoya-name.yellow{
+	background: #f4ba36;
+}
+
+.hoya-name.green{
+	background: #5cf436;
+}
+
+.hoya-btn{
+	background: red!important;
+    color: white!important;
+    margin: 5px!important;
+}
+
+.hoya-popup{
+	position:absolute;
+	z-index: 10;
+    height: 400px;
+    width: 500px;
+    background: white;
+    top: 100px;
+    left: 30%;
+    padding: 30px;
+    border-radius: 25px;
+    border: 1px solid #777;
+}
+
+.hoya-hover{
+	position: fixed;
+	z-index:1000;
+	left:0;
+	right:0;
+	top:0;
+	bottom:0;
+	background: rgba(0,0,0,0.9);
+}
+
+.hoya-popup>.name{
+	font-size: 20px;
+    text-align: center;
+}
+
+.hoya-popup>.score{
+	font-size: 80px;
+    color: #eee;
+    height: 130px;
+    width: 190px;
+    border-radius: 13px;
+    text-align: center;
+    padding-top: 15px;
+    margin: 40px auto;
+}
+
+.hoya-popup>.complaints{
+	color: #999;
+    margin-left: 35px;
+    margin-top: 12px;
+}
+
+.hoya-popup>.score.red{
+	background: #f44336;
+}
+
+.hoya-popup>.score.yellow{
+	background: #f4ba36;
+}
+
+.hoya-popup>.score.green{
+	background: #5cf436;
+}
