@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">SocioScore</string>
+    <string name="incoming_call_activity">incoming_call_activity</string>
+</resources>
