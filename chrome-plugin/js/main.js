@@ -1,29 +1,56 @@
-window.setInterval(function(){
-	processUserNames();
-	processPage();
-}, 1000);
+var userScores = {};
+$(document).ready(function() {
+	//window.setInterval(function(){
+		processUserNames();
+		processPage();
+	//}, 1000);	
+});
+
 
 function processUserNames(){
 	var classNames = ["DashboardProfileCard-screennameLink", "username", "twitter-atreply",
 		"ProfileHeaderCard-screennameLink", "ProfileCard-screennameLink"];
-	for(var i=0; i<classNames.length; i++){
-		processUserClassName(classNames[i]);
-	}
+		processUserClassName(classNames, 0);
 }
 
-function processUserClassName(className){
+function processUserClassName(classNames, q){
+	className = classNames[q];
 	var tags = $("." + className);
-	for(var i=0; i<tags.length; i++){
-		var name = $(tags[i]).text().trim();
-		if(! isSane(name)){
-			continue;
-		}
-		if($(tags[i]).hasClass("hoyahacks")){
-			continue;
-		}
-		var data = api.getScoreByUsername(name);
-		renderUserName(data, tags[i]);
+	getScoreByUsername(tags, 0, function() {
+		if (q < classNames.length)
+			processUserClassName(classNames, q + 1);
+	});
+}
+
+function getScoreByUsername(tags, i, callback) {
+	var name = $(tags[i]).text().trim();
+	if (name in userScores) {
+		console.log("PRINTING");
+		renderUserName(userScores[name], tags[i]);
 	}
+	if(! isSane(name) || $(tags[i]).hasClass("hoyahacks") || (name in userScores)){
+		if (i < tags.length) {
+			getScoreByUsername(tags, i + 1, callback);
+			return;
+		}
+		else {
+			callback();
+			return;
+		}
+	}
+	api.getScoreByUsername(name, tags[i], function(data, tag) {
+		userScores[name] = data;
+		console.log("PRINING");
+		renderUserName(data, tag);
+		if (i < tags.length) {
+			getScoreByUsername(tags, i + 1, callback);
+			return;
+		}
+		else {
+			callback();
+			return;
+		}
+	});
 }
 
 function isSane(name){
@@ -56,8 +83,7 @@ function processPage(){
 	if(name.length < 1){
 		return;
 	}
-	var data = api.getDataByUsername(name);
-	renderUserPage(data);
+	api.getDataByUsername(name, renderUserPage);
 }
 
 function renderUserPage(data){
