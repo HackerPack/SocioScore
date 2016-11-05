@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "HackHarass",
+  "name": "SocioScore",
   "description": "This extension protects from harassment",
   "version": "1.0",
 
