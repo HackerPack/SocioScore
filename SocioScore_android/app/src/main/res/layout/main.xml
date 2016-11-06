@@ -1,9 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/text"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:gravity="center_vertical|center_horizontal"
-    android:text="text"
-    android:windowBackground="@android:color/transparent"
-    android:windowIsTranslucent="true"
-    android:windowAnimationStyle="@android:style/Animation.Translucent"> Checking incoming</TextView>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:stretchColumns="1">
+
+    <TableRow
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        >
+        <TextView
+            android:id="@+id/caller_name"
+            android:textSize="30sp"
+            style="@style/black_text"
+            />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        >
+        <TextView
+            android:text="@string/app_name"
+            android:textSize="30sp"
+            style="@style/black_text"
+            />
+
+    </TableRow>
+    <TableRow
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center_horizontal"
+        >
+        <TextView
+            android:typeface="monospace"
+            android:textSize="100sp"
+            android:id="@+id/score"
+            style="@style/black_text"
+            />
+
+    </TableRow>
+    <TableRow  android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:gravity="center">
+        <TextView
+            android:text="@string/phone_number"
+            android:typeface="monospace"
+            style= "@style/table_left"
+            />
+        <TextView
+            android:id="@+id/phone_number"
+            android:typeface="monospace"
+            style="@style/table_right"
+            />
+    </TableRow>
+
+    <!--<TableRow  android:layout_height="wrap_content"-->
+    <!--android:layout_width="match_parent">-->
+    <!--<TextView-->
+    <!--android:text="@string/caller_name"-->
+    <!--style= "@style/table_left"-->
+    <!--/>-->
+    <!--<TextView-->
+    <!--android:id="@+id/caller_name"-->
+    <!--android:text="Bharathi"-->
+    <!--style="@style/table_right"-->
+    <!--/>-->
+    <!--</TableRow>-->
+
+    <!--<TableRow  android:layout_height="wrap_content"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:id="@+id/score_row">-->
+    <!--<TextView-->
+    <!--android:text="@string/score"-->
+    <!--style= "@style/table_left"-->
+    <!--/>-->
+    <!--<TextView-->
+    <!--android:id="@+id/score"-->
+    <!--android:text="300"-->
+    <!--style="@style/table_right"-->
+    <!--/>-->
+    <!--</TableRow>-->
+</TableLayout>
+

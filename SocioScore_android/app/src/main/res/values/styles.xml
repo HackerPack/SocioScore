@@ -13,4 +13,25 @@
         <item name="windowNoTitle">true</item>
     </style>
 
+    <style name="black_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_span">6</item>
+    </style>
+    <style name="table_left">
+        <item name="android:padding">3dip</item>
+        <item name="android:gravity">right</item>
+        <item name="android:layout_width">185dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="table_right">
+        <item name="android:gravity">left</item>
+        <item name="android:padding">3dip</item>
+    </style>
+
 </resources>
