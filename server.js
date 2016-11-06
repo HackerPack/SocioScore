@@ -397,23 +397,17 @@ app.get('/score/twitter/', function(request, res) {
     };
 		var femaleCount = 0;
 		var priorAbuse = 0;
-		pgclient.query("select * from users where emailid = '' OR phonenumber = '' OR twitterhandle = ''", function(e1, r1) {
-			if (!e1 && r1.rows.length > 0) {
-				possibleNames = [r1.rows[0]['emailid'], r1.rows[0]['phonenumber'], r1.rows[0]['twitterhandle']];
-				pgclient.query("select * from harassment_reports where harasser in $1", [possibleNames], function(e2, r2) {
-					if (!e2 && r2.rows.length > 0) {
-						for ( z = 0 ; z < r2.rows.length ; z++) {
-							if (r2.rows[z]['is_female'] == 'true') {
-								femaleCount ++;
-							}
-						}
-						priorAbuse = r2.rows.length;
-						calculateScore(params, res, priorAbuse, femaleCount);
+		console.log(request.query.user)
+		pgclient.query("select * from harassment_reports where harasser = $1", [request.query.user], function(e2, r2) {
+			console.log(r2);
+			if (!e2 && r2.rows.length > 0) {
+				for ( z = 0 ; z < r2.rows.length ; z++) {
+					if (r2.rows[z]['is_female'] == 'true') {
+						femaleCount ++;
 					}
-					else {
-						calculateScore(params, res, priorAbuse, femaleCount);
-					}
-				});
+				}
+				priorAbuse = r2.rows.length;
+				calculateScore(params, res, priorAbuse, femaleCount);
 			}
 			else {
 				calculateScore(params, res, priorAbuse, femaleCount);
