@@ -19,12 +19,23 @@ var api = {
 			'data' : { user : username },
 			success : function(data) { callback( {
 				"name": username,
-				"score": data['message'],
+				"score": data['score'],
 				"complaints": data['abusiveCount']
 			});
 		},
-			error : function(data) { console.log('error'); }
+			error : function(data) { console.log(data);console.log('error'); }
 		});
+	},
 
+	"getTweetAnalysis" : function(data, callback) {
+		$.ajax({
+			'url' : hostaddress + 'checkTweets',
+			'type' : 'post',
+			'data' : data,
+			success : function(data) {
+				callback([{ tweet_id : data[0].tweet_id, abusive : true}]);
+			},
+			error : function(data) { console.log(data); }
+		});
 	}
 }
