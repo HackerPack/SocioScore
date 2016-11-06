@@ -129,7 +129,7 @@ function processTweets() {
 	console.log('THe check tweets array is:')
 	console.log(data)
 
-	
+
 	api.getTweetAnalysis(data, function(response_data) {
 		$.each(response_data, function(i, v) {
 			var tid = v['tweet_id'];
