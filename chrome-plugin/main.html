@@ -2,7 +2,7 @@
   <head>
     <style>
       html, body {
-        height : 500px;
+        height : 550px;
         width: 400px;
         margin-top:15px;
       }
@@ -51,7 +51,7 @@
         width : 100%;
       }
 
-      #popup_register input {
+      #register_name, #phone, #email, #twitter {
         padding : 5px;
         width : 100%;
       }
@@ -74,6 +74,9 @@
               <input type='text' placeholder='Email' id='email' />
               <div class='labelText'>Twitter Handle</div>
               <input type='text' placeholder='@TwitterHandle' id='twitter' />
+              <div class='labelText'>Gender</div>
+              <input type="radio" name="gender" value="male" id='gender'>Male
+              <input type="radio" name="gender" value="female" id='gender'>Female
               <div><button id='registerButton'>Register</button></div>
           </div>
           <div id='popup_report'>

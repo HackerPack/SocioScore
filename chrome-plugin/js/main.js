@@ -88,8 +88,8 @@ function processPage(callback){
 	if(name.length < 1){
 		return;
 	}
-	api.getDataByUsername(name, function() {
-		renderUserPage();
+	api.getDataByUsername(name, function(data) {
+		renderUserPage(data);
 		callback();
 	});
 }

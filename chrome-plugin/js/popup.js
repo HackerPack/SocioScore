@@ -16,7 +16,8 @@ $(document).ready(function() {
     var email = $("#phone").val();
     var phone = $("#email").val();
     var twitter = $("#twitter").val();
-    api.registerNewUser(name, email, phone, twitter, function(data) {
+    var gender = $('input:radio[name=gender]:checked').val();
+    api.registerNewUser(name, email, phone, twitter, gender, function(data) {
       if (data.success) {
         $("#register_name").val('');
         $("#phone").val('');
