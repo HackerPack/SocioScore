@@ -1,4 +1,5 @@
 var hostaddress = 'http://localhost:3000/';
+//var hostaddress = 'http://10.126.79.94:3000/';
 
 var api = {
 	"getScoreByUsername": function(username, tag, callback){

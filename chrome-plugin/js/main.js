@@ -1,11 +1,9 @@
-var userScores = {};
-setTimeout(function() {
+setInterval(function() {
+		processPage();
 		processUserNames(function() {
-			processPage(function() {
-				processTweets();
-			});
+			processTweets();
 		});
-}, 2000);
+}, 500);
 
 
 function processUserNames(callback){
@@ -31,10 +29,14 @@ function processUserClassName(classNames, q, callback){
 
 function getScoreByUsername(tags, i, callback) {
 	var name = $(tags[i]).text().trim();
-	if (name in userScores) {
-		renderUserName(userScores[name], tags[i]);
+	var score = window.localStorage.getItem("hoya-user-"+name);
+	if(score != null){
+		score = parseInt(score);
 	}
-	if(! isSane(name) || $(tags[i]).hasClass("hoyahacks") || (name in userScores)){
+	if (score != null && score != -1) {
+		renderUserName(score, tags[i]);
+	}
+	if(! isSane(name) || $(tags[i]).hasClass("hoyahacks") || (score != null)){
 		if (i < tags.length) {
 			getScoreByUsername(tags, i + 1, callback);
 			return;
@@ -44,9 +46,10 @@ function getScoreByUsername(tags, i, callback) {
 			return;
 		}
 	}
+	window.localStorage.setItem("hoya-user-"+name, "-1");
 	api.getScoreByUsername(name, tags[i], function(data, tag) {
-		userScores[name] = data;
-		renderUserName(data, tag);
+		window.localStorage.setItem("hoya-user-"+name, data.score.toString());
+		renderUserName(data.score, tag);
 		if (i < tags.length) {
 			getScoreByUsername(tags, i + 1, callback);
 			return;
@@ -62,50 +65,50 @@ function isSane(name){
 	return (name[0] == "@" && name.length > 1);
 }
 
-function renderUserName(data, tag){
+function renderUserName(score, tag){
 	$(tag).addClass("hoyahacks");
-	if(data.score > 80){
-		$(tag).append("<span class='hoya-name green'>"+data.score+"</span>");
+	score = Math.floor(score);
+	if(score > 80){
+		$(tag).append("<span class='hoya-name green'>"+score+"</span>");
 	}
-	else if(data.score < 40){
-		$(tag).append("<span class='hoya-name red'>"+data.score+"</span>");
+	else if(score < 40){
+		$(tag).append("<span class='hoya-name red'>"+score+"</span>");
 	}
 	else{
-		$(tag).append("<span class='hoya-name yellow'>"+data.score+"</span>");
+		$(tag).append("<span class='hoya-name yellow'>"+score+"</span>");
 	}
 }
 
-function processPage(callback){
-	$("#report-btn").remove();
+function processPage(){
 	var url = window.location.href.split("/");
 	if(url.length != 4){
+		$("#report-btn").remove();
 		return;
 	}
 	if(url[3] == "following" || url[3] == "followers"){
+		$("#report-btn").remove();
 		return;
 	}
 	var name = url[3].trim();
 	if(name.length < 1){
+		$("#report-btn").remove();
 		return;
 	}
-	api.getDataByUsername(name, function(data) {
-		renderUserPage(data);
-		callback();
-	});
-}
-
-function renderUserPage(data){
-	//console.log(data);
 	var parent = $("#global-actions");
 	var button = "<button class='btn hoya-btn' id='report-btn'>View Report</button";
+	$("#report-btn").remove();
 	parent.append(button);
 	$("#report-btn").click(function(){
-		renderPopup(data);
+		api.getDataByUsername(name, function(data) {
+			renderPopup(data);
+		});
 	});
+
 }
 
 function renderPopup(data){
 	var score = "";
+	data.score = Math.floor(data.score);
 	if(data.score > 80){
 		score = "<div class='score green'>" + data.score + "</div>";
 	}
@@ -132,35 +135,47 @@ function processTweets() {
 		var tid = $(val).attr('data-item-id');
 		var tweetText = $($('.tweet-text')[i]).text();
 		var userid = $($(".username.js-action-profile-name")[i]).text();
-		data.push({"tweet_id" : tid, "tweet" : tweetText, "user_id" : userid});
+		var local = window.localStorage.getItem("hoya-tweet-"+tid);
+		if(local == null){
+			window.localStorage.setItem("hoya-tweet-"+tid, "-1");
+			data.push({"tweet_id" : tid, "tweet" : tweetText, "user_id" : userid});
+		}
+		else if(local != "-1"){
+			processTweet(JSON.parse(local));
+		}
 	}
 
-
-
-	api.getTweetAnalysis(data, function(response_data) {
-		$.each(response_data, function(i, v) {
-			var tid = v['tweet_id'];
-			var abusive = v['abusive'];
-			if (abusive === 'true') {
-				var d = document.createElement('div');
-				$(d).append('<div class="displayMessage">We found this tweet to be abusive. </div>');
-
-				var showButton = document.createElement("div");
-				showButton.className = 'showTweet';
-				showButton.innerHTML = "Show Tweet";
-				$(d).append(showButton);
-
-				d.className = "hoya-blackbox";
-				d.id = "hoya-black-" + tid;
-
-				(function(tid) {
-					$(showButton).on("click", function() {
-						$("#hoya-black-" + tid).hide();
-					});
-				})(tid);
-
-				$("li[data-item-id='"+tid+"']").append(d);
-			}
+	if(data.length > 0){
+		api.getTweetAnalysis(data, function(response_data) {
+			$.each(response_data, function(i, v) {
+				window.localStorage.setItem("hoya-tweet-"+v['tweet_id'], JSON.stringify(v));
+				processTweet(v);
+			});
 		});
-	});
+	}
+}
+
+function processTweet(v){
+	var tid = v['tweet_id'];
+	var abusive = v['abusive'];
+	if (abusive === 'true') {
+		var d = document.createElement('div');
+		$(d).append('<div class="displayMessage">We found this tweet to be abusive. </div>');
+
+		var showButton = document.createElement("div");
+		showButton.className = 'showTweet';
+		showButton.innerHTML = "Show Tweet";
+		$(d).append(showButton);
+
+		d.className = "hoya-blackbox";
+		d.id = "hoya-black-" + tid;
+
+		(function(tid) {
+			$(showButton).on("click", function() {
+				$("#hoya-black-" + tid).hide();
+			});
+		})(tid);
+
+		$("li[data-item-id='"+tid+"']").append(d);
+	}
 }
