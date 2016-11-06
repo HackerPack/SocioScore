@@ -31,6 +31,8 @@
       }
       #popup_report {
         display:none;
+        width : 300px;
+        margin:auto;
       }
       #popup_content {
         padding-top : 60px;
@@ -38,11 +40,18 @@
 
       .labelText {
         font-size:15px;
-        padding-top : 20px;
+        padding-top : 15px;
         padding-bottom:5px;
       }
 
-      #registerButton {
+      .orText {
+        padding:0px;
+        padding-top:5px;
+        padding-bottom:-5px;
+        text-align:center;
+      }
+
+      #registerButton, #reportButton {
         background : #a60000;
         color:white;
         padding : 15px;
@@ -51,9 +60,15 @@
         width : 100%;
       }
 
-      #register_name, #phone, #email, #twitter {
+      #register_name, #phone, #email, #twitter, .rep {
         padding : 5px;
         width : 100%;
+      }
+
+      .repta {
+        padding:5px;
+        width : 100%;
+        height : 70px;
       }
     </style>
   </head>
@@ -81,6 +96,17 @@
           </div>
           <div id='popup_report'>
             <h3> Report a harassment</h3>
+              <div class='labelText'>Twitter Handle</div>
+              <input type='text' placeholder='Twitter Handle' class = 'rep' id='rep_twitter' />
+              <div class='orText'>or</div>
+              <div class='labelText'>Phone #</div>
+              <input type='text' placeholder='Phone' class = 'rep' id='rep_phone' />
+              <div class='orText'>or</div>
+              <div class='labelText'>Email ID</div>
+              <input type='text' placeholder='Email ID' class = 'rep' id='rep_emailid' />
+              <div class='labelText'>Description</div>
+              <textarea class = 'repta' id='rep_description'></textarea>
+              <div><button id='reportButton'>Report</button></div>
           </div>
         </div>
       </div>
