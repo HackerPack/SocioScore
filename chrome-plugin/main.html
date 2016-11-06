@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <style>
+      html, body {
+        height : 500px;
+        width: 400px;
+        margin-top:15px;
+      }
+      #popup_header {
+      		width : 100%;
+      		position:absolute;
+      		height : 50px;
+      		background : white;
+          text-align:center;
+      }
+      #popup_header div {
+        margin : 10px;
+        color : white;
+        font-size : 27px;
+        background : #a60000;
+        padding : 20px;
+        padding-top:10px;
+        padding-bottom:10px;
+        display : inline;
+        width : 100px;
+      }
+      #popup_register {
+        display:block;
+        width : 300px;
+        margin:auto;
+      }
+      #popup_report {
+        display:none;
+      }
+      #popup_content {
+        padding-top : 60px;
+      }
+
+      .labelText {
+        font-size:15px;
+        padding-top : 20px;
+        padding-bottom:5px;
+      }
+
+      #registerButton {
+        background : #a60000;
+        color:white;
+        padding : 15px;
+        margin-top : 20px;
+        border:0px;
+        width : 100%;
+      }
+
+      #popup_register input {
+        padding : 5px;
+        width : 100%;
+      }
+    </style>
+  </head>
+  <body>
+      <div id='popup_container'>
+        <div id='popup_header'>
+            <div> Register </div>
+            <div> Report </div>
+        </div>
+        <div id='popup_content'>
+          <div id='popup_register'>
+            <h2>Register as a new user</h2>
+              <div class='labelText'>Name</div>
+              <input type='text' placeholder='Name' id='register_name' />
+              <div class='labelText'>Phone Number</div>
+              <input type='text' placeholder='Phone #' id='phone' />
+              <div class='labelText'>Email ID</div>
+              <input type='text' placeholder='Email' id='email' />
+              <div class='labelText'>Twitter Handle</div>
+              <input type='text' placeholder='@TwitterHandle' id='twitter' />
+              <div><button id='registerButton'>Register</button></div>
+          </div>
+          <div id='popup_report'>
+            <h3> Report a harassment</h3>
+          </div>
+        </div>
+      </div>
+
+      <script src='./lib/jquery-3.1.1.min.js'></script>
+      <script src='./js/api.js'></script>
+      <script src='./js/popup.js'></script>
+  </body>
+</html>

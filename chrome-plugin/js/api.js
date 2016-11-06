@@ -39,5 +39,19 @@ var api = {
 			},
 			error : function(data) { console.log(data); }
 		});
+	},
+
+	"registerNewUser" : function(name, email, phone, twitter, callback) {
+		$.ajax({
+			'url' : hostaddress + 'addUser',
+			'type' : 'post',
+			'data' : {'name' : name, 'phoneNumber' : phone, 'email' : email, 'twitterHandle':twitter },
+			success : function(data) {
+				if (data == "new user added successfully") {
+					callback({success : true});
+				}
+			},
+			error : function(data) { console.log(data);callback({success:false}) }
+		});
 	}
 }

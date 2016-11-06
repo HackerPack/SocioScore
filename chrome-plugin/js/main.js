@@ -1,25 +1,31 @@
 var userScores = {};
 setTimeout(function() {
-	// window.setInterval(function(){
-		processUserNames();
-		processPage();
-		processTweets();
-	// }, 1000);
+		processUserNames(function() {
+			processPage(function() {
+				processTweets();
+			});
+		});
 }, 2000);
 
 
-function processUserNames(){
+function processUserNames(callback){
 	var classNames = ["DashboardProfileCard-screennameLink", "username", "twitter-atreply",
 		"ProfileHeaderCard-screennameLink", "ProfileCard-screennameLink"];
-		processUserClassName(classNames, 0);
+		processUserClassName(classNames, 0, function() {
+			callback();
+		});
 }
 
-function processUserClassName(classNames, q){
+function processUserClassName(classNames, q, callback){
 	className = classNames[q];
 	var tags = $("." + className);
 	getScoreByUsername(tags, 0, function() {
-		if (q < classNames.length)
-			processUserClassName(classNames, q + 1);
+		if (q < classNames.length) {
+			processUserClassName(classNames, q + 1, callback);
+		}
+		else {
+			callback();
+		}
 	});
 }
 
@@ -69,7 +75,7 @@ function renderUserName(data, tag){
 	}
 }
 
-function processPage(){
+function processPage(callback){
 	$("#report-btn").remove();
 	var url = window.location.href.split("/");
 	if(url.length != 4){
@@ -82,7 +88,10 @@ function processPage(){
 	if(name.length < 1){
 		return;
 	}
-	api.getDataByUsername(name, renderUserPage);
+	api.getDataByUsername(name, function() {
+		renderUserPage();
+		callback();
+	});
 }
 
 function renderUserPage(data){
@@ -129,7 +138,7 @@ function processTweets() {
 	console.log('THe check tweets array is:')
 	console.log(data)
 
-	
+
 	api.getTweetAnalysis(data, function(response_data) {
 		$.each(response_data, function(i, v) {
 			var tid = v['tweet_id'];

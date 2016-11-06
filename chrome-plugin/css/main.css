@@ -93,7 +93,7 @@
 .displayMessage {
 	color:white;
 	font-size:20px;
-	padding-top:50px;
+	padding-top:5%;
 	width:350px;
 	margin:auto;
 	text-align:center;
@@ -105,7 +105,7 @@
 	color:white;
 	width:150px;
 	margin:auto;
-	margin-top:50px;
+	margin-top:5%;
 	text-align:center;
 	cursor:pointer;
 }

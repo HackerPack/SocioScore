@@ -11,12 +11,12 @@ var bodyParser = require('body-parser');
 var databasePort = process.env.CSDBPORT || 5432
 var databaseName = 'trollwall'//process.env.CSDBNAME || ''
 // <<<<<<< HEAD
-var databaseUserName = 'postgres'//process.env.CSDBUSER 
+var databaseUserName = 'postgres'//process.env.CSDBUSER
 // =======
-// var databaseUserName = process.env.CSDBUSER 
+// var databaseUserName = process.env.CSDBUSER
 // >>>>>>> 5345786512f4882c7c0d7d75e5e67428b20f29bc
-var databasePassword = process.env.CSDBPASSWORD 
-var databaseURL = 'localhost'//process.env.CSDBURL
+var databasePassword = process.env.CSDBPASSWORD
+var databaseURL = '10.126.79.76';//'localhost'//process.env.CSDBURL
 var barkAccessToken = process.env.BARK_TOKEN
 var app = express()
 
@@ -44,8 +44,8 @@ var phoneEmailids = []
 
 pgclient.query("select phonenumber,emailid from users", function (error, result) {
 	// logger.info(result)
-	
-	if(error || !result.rows) 
+
+	if(error || !result.rows)
 		return
 
 	// logger.info(result)
@@ -53,7 +53,7 @@ pgclient.query("select phonenumber,emailid from users", function (error, result)
 		if (result.rows[i])
 			phoneEmailids.push(result.rows[i])
 	}
-	
+
 	logger.info(JSON.stringify(phoneEmailids))
 	handleStreams(phoneEmailids)
 })
@@ -72,7 +72,7 @@ function checkTweets (message, callback) {
 	}, function(error, response, body){
 		if (error) {
 			callback({success: false, message: 'Error in API call'});
-		} 
+		}
 		else {
 			if (body.success) {
 				callback({success: body.success, message: body.abusive});
@@ -111,7 +111,7 @@ function queryBark(tweets, index) {
 
 
 
-	
+
 }
 
 app.post('/checkTweets', function (req, res) {
@@ -130,7 +130,7 @@ app.post('/checkTweets', function (req, res) {
 		setTimeout(function(index) {
 		request({ url: 'https://partner.bark.us/api/v1/messages?token='+barkAccessToken, //URL to hit
 	    // qs: {from: 'blog example', time: +new Date()}, //Query string data
-	    
+
 	    method: 'POST',
 	    //Lets post the following key/values as form
 	    json: {
@@ -154,20 +154,20 @@ app.post('/checkTweets', function (req, res) {
 				// callback({success: body.success, abusive: body.abusive})
 
 				// if (body.success) {
-				// 	callback(body.abusive)					
+				// 	callback(body.abusive)
 				// } else {
 				// 	callback('api call failed')
 				// }
 				loop(index+1)
 			})
-			
-		
-		
-		
-	}, 500, index)	
+
+
+
+
+	}, 500, index)
 	}
-	
-	if (tweets) 
+
+	if (tweets)
 		loop(0)
 	else
 		res.send([])
@@ -192,7 +192,7 @@ app.post('/addUser', function (req, res) {
 		}
 	})
 })
-	
+
 app.get('/checkTweet', function (req, res) {
 	logger.info(req.query.tweet)
 	// var isTimedOut = false;
@@ -210,7 +210,7 @@ app.get('/checkTweet', function (req, res) {
 
 	// request({ url: 'https://partner.bark.us/api/v1/messages?token=gympEyUqvY4Vg5P55nqo13uC', //URL to hit
 	//     // qs: {from: 'blog example', time: +new Date()}, //Query string data
-	    
+
 	//     method: 'POST',
 	//     //Lets post the following key/values as form
 	//     json: {
@@ -254,7 +254,7 @@ app.get('/score/twitter/', function(request, res) {
 						if (barkResponse.success && barkResponse.message) {
 							abusiveTweets ++;
 						}
-					
+
 						if (processedCount == totalTweets) {
 							//clearTimeout(timeoutPointer);
 							try {
@@ -286,7 +286,7 @@ var client = new twitter({
 
 
 function handleStreams(phoneEmailids) {
-	
+
 	var phones = []
 
 	if (phoneEmailids.length == 0)
@@ -306,7 +306,7 @@ function handleStreams(phoneEmailids) {
     logger.info("The URL of the tweet is " + "https://twitter.com/statuses/"+event.id_str)
     logger.info(event && event.text);
   });
- 
+
   stream.on('error', function(error) {
     // throw error;
     logger.info(error)
