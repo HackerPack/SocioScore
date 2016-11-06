@@ -402,7 +402,7 @@ app.get('/score/twitter/', function(request, res) {
 			console.log(r2);
 			if (!e2 && r2.rows.length > 0) {
 				for ( z = 0 ; z < r2.rows.length ; z++) {
-					if (r2.rows[z]['is_female'] == 'true') {
+					if (r2.rows[z]['is_female'] == true) {
 						femaleCount ++;
 					}
 				}
