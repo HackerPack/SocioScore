@@ -21,7 +21,8 @@ var api = {
 			success : function(data) { callback( {
 				"name": username,
 				"score": data['score'],
-				"complaints": data['abusiveCount']
+				"complaints": data['abusiveCount'],
+				"femaleAbuseCount": data["femaleAbuseCount"]
 			});
 		},
 			error : function(data) { console.log(data);console.log('error'); }

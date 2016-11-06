@@ -94,6 +94,7 @@ function processPage(){
 		$("#report-btn").remove();
 		return;
 	}
+	name = "@" + name;
 	var parent = $("#global-actions");
 	var button = "<button class='btn hoya-btn' id='report-btn'>View Report</button";
 	$("#report-btn").remove();
@@ -120,7 +121,8 @@ function renderPopup(data){
 	}
 	var name = "<div class='name'>" + data.name + "</div>";
 	var complaints = "<div class='complaints'>" + data.complaints + " complaints raised against user</div>";
-	$("body").append("<div class='hoya-hover' id='report-popup'><div class='hoya-popup'>"+name+score+complaints+"</div></div>");
+	var femComplaints = "<div class='complaints'>" + data.femaleAbuseCount + " of them are raised by females</div>";
+	$("body").append("<div class='hoya-hover' id='report-popup'><div class='hoya-popup'>"+name+score+complaints+femComplaints+"</div></div>");
 	$("#report-popup").click(function(){
 		$("#report-popup").remove();
 	})
@@ -157,6 +159,9 @@ function processTweets() {
 
 function processTweet(v){
 	var tid = v['tweet_id'];
+	if($("#hoya-black-" + tid).length != 0 && (! $("#hoya-black-" + tid).is(":visible"))) {
+		return;
+	}
 	var abusive = v['abusive'];
 	if (abusive === 'true') {
 		var d = document.createElement('div');
@@ -176,6 +181,7 @@ function processTweet(v){
 			});
 		})(tid);
 
+		$("#hoya-black-" + tid).remove();
 		$("li[data-item-id='"+tid+"']").append(d);
 	}
 }
