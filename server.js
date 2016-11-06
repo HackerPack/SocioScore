@@ -11,14 +11,11 @@ var mailer = require('express-mailer');
 
 
 var databasePort = process.env.CSDBPORT || 5432
+var databasePassword = process.env.CSDBPASSWORD
+var databaseURL = '10.126.79.76';//'localhost'//process.env.CSDBURL
 var databaseName = 'trollwall' //process.env.CSDBNAME || ''
     // <<<<<<< HEAD
-var databaseUserName = 'postgres' //process.env.CSDBUSER 
-    // =======
-    // var databaseUserName = process.env.CSDBUSER 
-    // >>>>>>> 5345786512f4882c7c0d7d75e5e67428b20f29bc
-var databasePassword = process.env.CSDBPASSWORD
-var databaseURL = 'localhost' //process.env.CSDBURL
+var databaseUserName = 'postgres' //process.env.CSDBUSER
 var barkAccessToken = process.env.BARK_TOKEN
 var app = express()
 
@@ -40,19 +37,6 @@ app.get('/', function(req, res) {
 app.listen(3000, function() {
     logger.info('Example app listening on port 3000!')
 })
-
-mailer.extend(app, {
-    from: 'rakeshkumarwashere@gmail.com',
-    host: 'smtp.gmail.com', // hostname 
-    secureConnection: true, // use SSL 
-    port: 465, // port for secure SMTP 
-    transportMethod: 'SMTP', // default is SMTP. Accepts anything that nodemailer accepts 
-    auth: {
-        user: 'rakeshkumarwashere@gmail.com',
-        pass: 'DAVps-2005'
-    }
-});
-
 
 
 
@@ -112,6 +96,7 @@ function checkTweets(message, callback) {
 }
 
 
+
 app.get('/phone/:phonenumber', function(req, res) {
     logger.info(req.params.phonenumber)
 
@@ -129,17 +114,6 @@ app.get('/phone/:phonenumber', function(req, res) {
     })
 })
 
-// function queryBark(tweets, index) {
-//     if (index >= tweets.length)
-//         return tweets
-
-
-
-
-// }
-
-
-// function check
 
 app.post('/checkTweets', function(req, res) {
     logger.info(req.body)
@@ -210,7 +184,7 @@ app.post('/checkTweets', function(req, res) {
     if (tweets)
         loop(0)
     else
-        res.send([])
+        res.send([]);
 })
 
 app.post('/addUser', function(req, res) {
@@ -233,6 +207,7 @@ app.post('/addUser', function(req, res) {
         }
     })
 })
+
 
 app.get('/checkTweet', function(req, res) {
     logger.info(req.query.tweet)
@@ -383,7 +358,7 @@ app.get('/score/twitter/', function(request, res) {
                                     } catch (e) {}
                                 }
 
-                                loop(index + 1)
+                                loop(index+1)
                             });
 
                         }), 500, index);
@@ -416,6 +391,7 @@ var client = new twitter({
 
 function handleStreams(phoneEmailids) {
 
+
     var phones = []
 
     if (phoneEmailids.length == 0)
@@ -428,46 +404,36 @@ function handleStreams(phoneEmailids) {
 
     // logger.info(phones)
 
-    client.stream('statuses/filter', {
-        track: phones.join()
-    }, function(stream) {
-        stream.on('data', function(event) {
-            logger.info("data captured from stream")
-                // logger.info(event)
-            app.mailer.send("https://twitter.com/statuses/" + event.id_str, {
-                to: 'rsukuma2@ncsu.edu', // REQUIRED. This can be a comma delimited string just like a normal email to field.  
-                subject: 'Test Email', // REQUIRED. 
-                // otherProperty: 'Other Property' // All additional properties are also passed to the template as local variables. 
-            }, function(err) {
-                if (err) {
-                    // handle error 
-                    console.log(err);
-                    res.send('There was an error sending the email');
-                    return;
-                }
 
-                logger.info('email sent')
-                // res.send('Email Sent');
-            });
+    // client.stream('statuses/filter', {
+    //     track: phones.join()
+    // }, function(stream) {
+    //     stream.on('data', function(event) {
+    //         logger.info("data captured from stream")
+    //             // logger.info(event)
+    //         var mailOptions = {
+    //             from: 'rakeshkumarwashere@gmail.com', // sender address
+    //             to: 'rsukuma2@ncsu.edu', // list of receivers
+    //             subject: 'Phone number exposed', // Subject line
+    //             text: 'Your phone number was exposed and tweeted. Click here to see the tweet ' + "https://twitter.com/statuses/" + event.id_str, // plaintext body
+    //             // html: '<b>Hello world 🐴</b>' // html body
+    //         };
 
-            logger.info("The URL of the tweet is " + "https://twitter.com/statuses/" + event.id_str)
-            logger.info(event && event.text);
-        });
+    //         transporter.sendMail(mailOptions, function(error, info) {
+    //             if (error) {
+    //                 return console.log(error);
+    //             }
+    //             console.log('Message sent: ' + info.response);
+    //         });
 
-        stream.on('error', function(error) {
-            // throw error;
-            logger.info(error)
-        });
-    });
+    //         logger.info("The URL of the tweet is " + "https://twitter.com/statuses/" + event.id_str)
+    //         logger.info(event && event.text);
+    //     });
+
+    //     stream.on('error', function(error) {
+    //         // throw error;
+    //         logger.info(error)
+    //     });
+    // });
 
 }
-
-
-var params = {
-    q: '@gvivek19'
-};
-client.get('search/tweets', params, function(error, tweets, response) {
-    if (!error) {
-        // logger.info(JSON.stringify(tweets));
-    }
-});
