@@ -1,9 +1,8 @@
 var isRegistered = false;
 var userDetails = {};
 
-$(document).ready(function() {
-
   isRegistered = localStorage.getItem("hoya-hacks-userdetails") != null;
+  console.log(isRegistered);
   if (isRegistered) {
     userDetails = $.parseJSON(localStorage.getItem("hoya-hacks-userdetails"));
     $("#popup_report").show();
@@ -53,4 +52,3 @@ $(document).ready(function() {
       }
     });
   });
-});
