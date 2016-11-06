@@ -34,10 +34,10 @@ var api = {
 			'url' : hostaddress + 'checkTweets',
 			'type' : 'post',
 			'data' : {'tweets' : data },
-			success : function(data) {
-				callback([{ tweet_id : data[0].tweet_id, abusive : true}]);
+			success : function(data1) {
+				callback(data1);
 			},
-			error : function(data) { console.log(data); }
+			error : function(data2) { console.log(data2); }
 		});
 	},
 

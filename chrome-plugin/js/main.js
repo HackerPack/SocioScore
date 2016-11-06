@@ -95,7 +95,7 @@ function processPage(callback){
 }
 
 function renderUserPage(data){
-	console.log(data);
+	//console.log(data);
 	var parent = $("#global-actions");
 	var button = "<button class='btn hoya-btn' id='report-btn'>View Report</button";
 	parent.append(button);
@@ -135,16 +135,13 @@ function processTweets() {
 		data.push({"tweet_id" : tid, "tweet" : tweetText, "user_id" : userid});
 	}
 
-	console.log('THe check tweets array is:')
-	console.log(data)
 
 
 	api.getTweetAnalysis(data, function(response_data) {
 		$.each(response_data, function(i, v) {
 			var tid = v['tweet_id'];
 			var abusive = v['abusive'];
-			console.log(tid, abusive);
-			if (abusive === true) {
+			if (abusive === 'true') {
 				var d = document.createElement('div');
 				$(d).append('<div class="displayMessage">We found this tweet to be abusive. </div>');
 
