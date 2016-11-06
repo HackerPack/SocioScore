@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">SocioScore</string>
     <string name="incoming_call_activity">incoming_call_activity</string>
+    <string name="phone_number">Phone Number: </string>
+    <string name="caller_name"></string>
+    <string name="score">Score</string>
 </resources>
