@@ -1,15 +1,14 @@
+var isRegistered = false;
+var userDetails = {};
+
 $(document).ready(function() {
-  $("div", "#popup_header").on('click', function(event) {
-    var c = $($(event.target)[0]).html().trim();
-    if (c == "Register") {
-      $("#popup_report").hide();
-      $("#popup_register").show();
-    }
-    else {
-      $("#popup_report").show();
-      $("#popup_register").hide();
-    }
-  });
+
+  isRegistered = localStorage.getItem("hoya-hacks-userdetails") != null;
+  if (isRegistered) {
+    userDetails = $.parseJSON(localStorage.getItem("hoya-hacks-userdetails"));
+    $("#popup_report").show();
+    $("#popup_register").hide();
+  }
 
   $("#registerButton").on("click", function() {
     var name = $("#register_name").val();
@@ -23,7 +22,30 @@ $(document).ready(function() {
         $("#phone").val('');
         $("#email").val('');
         $("#twitter").val('');
+        userDetails = {'name' : name, 'email' : email, 'phone' : phone, 'twitter' : twitter, 'gender' : gender};
+        localStorage.setItem("hoya-hacks-userdetails", JSON.stringify(userDetails));
         alert('New user registered successfully');
+        $("#popup_report").show();
+        $("#popup_register").hide();
+      }
+    });
+  });
+
+  $("#reportButton").on("click", function() {
+    var email = $("#rep_phone").val();
+    var phone = $("#rep_emailid").val();
+    var twitter = $("#rep_twitter").val();
+    var description = $("#rep_description").val();
+    var gender = userDetails.gender;
+
+    var contnt = "";
+    if (email.length > 0) contnt = email;
+    if (phone.length > 0) contnt = phone;
+    if (twitter.length > 0) contnt = twitter;
+
+    api.reportHarassment(userDetails.twitter, contnt, gender, description, function(data) {
+      if (data.success) {
+        alert('Harassment reported successfully');
       }
     });
   });

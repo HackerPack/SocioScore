@@ -35,12 +35,18 @@
         margin:auto;
       }
       #popup_content {
-        padding-top : 60px;
+        padding-top : 10px;
       }
 
       .labelText {
         font-size:15px;
         padding-top : 15px;
+        padding-bottom:5px;
+      }
+
+      .labelText1 {
+        font-size:15px;
+        padding-top : 10px;
         padding-bottom:5px;
       }
 
@@ -74,10 +80,6 @@
   </head>
   <body>
       <div id='popup_container'>
-        <div id='popup_header'>
-            <div> Register </div>
-            <div> Report </div>
-        </div>
         <div id='popup_content'>
           <div id='popup_register'>
             <h2>Register as a new user</h2>
@@ -96,15 +98,15 @@
           </div>
           <div id='popup_report'>
             <h3> Report a harassment</h3>
-              <div class='labelText'>Twitter Handle</div>
+              <div class='labelText1'>Twitter Handle</div>
               <input type='text' placeholder='Twitter Handle' class = 'rep' id='rep_twitter' />
               <div class='orText'>or</div>
-              <div class='labelText'>Phone #</div>
+              <div class='labelText1'>Phone #</div>
               <input type='text' placeholder='Phone' class = 'rep' id='rep_phone' />
               <div class='orText'>or</div>
-              <div class='labelText'>Email ID</div>
+              <div class='labelText1'>Email ID</div>
               <input type='text' placeholder='Email ID' class = 'rep' id='rep_emailid' />
-              <div class='labelText'>Description</div>
+              <div class='labelText1'>Description</div>
               <textarea class = 'repta' id='rep_description'></textarea>
               <div><button id='reportButton'>Report</button></div>
           </div>

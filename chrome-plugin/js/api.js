@@ -53,5 +53,19 @@ var api = {
 			},
 			error : function(data) { console.log(data);callback({success:false}) }
 		});
+	},
+
+	"reportHarassment" :function(victim, user, gender, desc, callback) {
+		$.ajax({
+			'url' : hostaddress + 'addHarassment',
+			'type' : 'post',
+			'data' : {'harasser' : user, 'victim' : victim, 'description':desc, 'isfemale' : (gender == 'female')},
+			success : function(data) {
+				if (data == "success") {
+					callback({success : true});
+				}
+			},
+			error : function(data) { console.log(data);callback({success:false}) }
+		});
 	}
 }
