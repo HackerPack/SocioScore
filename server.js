@@ -193,7 +193,7 @@ app.post('/addUser', function(req, res) {
     var phoneNumber = req.body.phoneNumber || ''
     var emailid = req.body.email || ''
     var twitterHandle = req.body.twitterHandle || ''
-    var gender = req.bosy.gender || ''
+    var gender = req.body.gender || ''
     var race = req.body.race || ''
 
     console.log(phoneNumber)
@@ -204,6 +204,23 @@ app.post('/addUser', function(req, res) {
 
         } else {
             res.send('new user added successfully')
+        }
+    })
+})
+
+app.post('/addHarassment', function(req, res) {
+    logger.info(req.body)
+    var victim = req.body.victim;
+    var harasser = req.body.harasser;
+    var isfemale = req.body.isfemale;
+
+    pgclient.query("insert into harassment_reports (victim, harasser, is_female) values ($1, $2, $3)", [victim, harasser, isfemale], function(error, response) {
+        console.log(response)
+        if (error) {
+            res.send(error)
+
+        } else {
+            res.send('success')
         }
     })
 })
@@ -257,126 +274,151 @@ function formatScore(score) {
     return score.toFixed(0)
 }
 
+function calculateScore(params, res, priorAbuse, femaleCount) {
+	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+			//logger.info('indide the function after user timeline call')
+			if (!error) {
+					//timeoutPointer = setTimeout(function() {
+					//  res.send({success : false, message : 'Timeout' });
+					//}, 10000);
+
+					// logger.info(tweets)
+					var abusiveTweets = priorAbuse;
+					var totalTweets = tweets.length;
+					var processedCount = 0;
+					// logger.info('tweets to be serached')
+					// logger.info(tweets)
+					function loop(index) {
+							// logger.info('This is the value of tweetIterator')
+							// logger.info(tweetIterator)
+							if (index == totalTweets) {
+									//clearTimeout(timeoutPointer);
+									try {
+											console.log("SENDING 1...");
+											console.log(abusiveTweets);
+											res.send({
+													score: formatScore(100 * (1 - abusiveTweets / totalTweets)),
+													abusiveCount: abusiveTweets,
+													femaleAbuseCount: femaleCount
+											});
+											return;
+									} catch (e) {}
+							}
+							// logger.info(tweets[index].id)
+							// logger.info(tweets[index].text)
+							pgclient.query("select * from tweets where id='" + tweets[index].id + "'", function(error, result) {
+									// logger.info(result);
+									if (!error && result.rows.length > 0) {
+											// logger.info('user tweet found in db ')
+											// index++
+											// logger.info(result.rows[0].abusive)
+											// logger.info()
+											logger.info(result.rows[0].abusive, typeof result.rows[0].abusive, result.rows[0].abusive == 'true')
+											if (result.rows[0].abusive == 'true')
+													abusiveTweets++
+
+													if (index == totalTweets) {
+															//clearTimeout(timeoutPointer);
+															try {
+																	console.log("SENDING 2...");
+																	console.log(abusiveTweets);
+																	res.send({
+																			score: formatScore(100 * (1 - abusiveTweets / totalTweets)),
+																			abusiveCount: abusiveTweets,
+																			femaleAbuseCount: femaleCount
+																	});
+																	return;
+															} catch (e) {}
+													}
+											loop(index + 1)
+
+									} else {
+											setTimeout((function(index) {
+
+													checkTweets(tweets[index].text, function(barkResponse) {
+															// logger.info('inside the ekse part')
+															// logger.info(tweets[index].text)
+															// logger.info('barkResponse is')
+															if (barkResponse.success) {
+																	pgclient.query("insert into tweets (id, abusive) values ($1, $2)", [tweets[index].id, barkResponse.message], function(error, result) {
+																			if (!error) {
+																					// logger.info('inserted user tweet into db')
+																					//logger.info(error)
+																			} else {
+																					// logger.info('couldnt insert user  tweet into db')
+																					//logger.info(error)
+																			}
+																	})
+
+															}
+
+
+															if (barkResponse.success && barkResponse.message) {
+																	abusiveTweets++;
+															}
+
+															if (index == totalTweets) {
+																	//clearTimeout(timeoutPointer);
+																	try {
+																			console.log("SENDING 3...");
+																			console.log(abusiveTweets);
+																			res.send({
+																					score: formatScore(100 * (1 - abusiveTweets / totalTweets)),
+																					abusiveCount: abusiveTweets,
+																					femaleAbuseCount: femaleCount
+																			});
+																			return;
+																	} catch (e) {}
+															}
+
+															loop(index+1)
+													});
+
+											}), 500, index);
+									}
+							})
+					}
+
+					loop(0)
+
+			} else {
+					try {
+							res.send({
+									success: false,
+									message: 'Error with Twitter API'
+							});
+					} catch (e) {}
+			}
+	});
+}
 app.get('/score/twitter/', function(request, res) {
     var params = {
         screen_name: request.query.user
     };
-    console.log(params);
-    client.get('statuses/user_timeline', params, function(error, tweets, response) {
-        //logger.info('indide the function after user timeline call')
-        if (!error) {
-            //timeoutPointer = setTimeout(function() {
-            //  res.send({success : false, message : 'Timeout' });
-            //}, 10000);
-
-            // logger.info(tweets)
-            var abusiveTweets = 0;
-            var totalTweets = tweets.length;
-            var processedCount = 0;
-            // logger.info('tweets to be serached')
-            // logger.info(tweets)
-            function loop(index) {
-                // logger.info('This is the value of tweetIterator')
-                // logger.info(tweetIterator)
-                if (index == totalTweets) {
-                    //clearTimeout(timeoutPointer);
-                    try {
-                        console.log("SENDING 1...");
-                        console.log(abusiveTweets);
-                        res.send({
-                            score: formatScore(100 * (1 - abusiveTweets / totalTweets)),
-                            abusiveCount: abusiveTweets
-                        });
-                        return;
-                    } catch (e) {}
-                }
-                // logger.info(tweets[index].id)
-                // logger.info(tweets[index].text)
-                pgclient.query("select * from tweets where id='" + tweets[index].id + "'", function(error, result) {
-                    // logger.info(result);
-                    if (!error && result.rows.length > 0) {
-                        // logger.info('user tweet found in db ')
-                        // index++
-                        // logger.info(result.rows[0].abusive)
-                        // logger.info()
-                        logger.info(result.rows[0].abusive, typeof result.rows[0].abusive, result.rows[0].abusive == 'true')
-                        if (result.rows[0].abusive == 'true')
-                            abusiveTweets++
-
-                            if (index == totalTweets) {
-                                //clearTimeout(timeoutPointer);
-                                try {
-                                    console.log("SENDING 2...");
-                                    console.log(abusiveTweets);
-                                    res.send({
-                                        score: formatScore(100 * (1 - abusiveTweets / totalTweets)),
-                                        abusiveCount: abusiveTweets
-                                    });
-                                    return;
-                                } catch (e) {}
-
-
-
-                            }
-                        loop(index + 1)
-
-                    } else {
-                        setTimeout((function(index) {
-
-                            checkTweets(tweets[index].text, function(barkResponse) {
-                                // logger.info('inside the ekse part')
-                                // logger.info(tweets[index].text)
-                                // logger.info('barkResponse is')
-                                if (barkResponse.success) {
-                                    pgclient.query("insert into tweets (id, abusive) values ($1, $2)", [tweets[index].id, barkResponse.message], function(error, result) {
-                                        if (!error) {
-                                            // logger.info('inserted user tweet into db')
-                                            //logger.info(error)
-                                        } else {
-                                            // logger.info('couldnt insert user  tweet into db')
-                                            //logger.info(error)
-                                        }
-                                    })
-
-                                }
-
-
-                                if (barkResponse.success && barkResponse.message) {
-                                    abusiveTweets++;
-                                }
-
-                                if (index == totalTweets) {
-                                    //clearTimeout(timeoutPointer);
-                                    try {
-                                        console.log("SENDING 3...");
-                                        console.log(abusiveTweets);
-                                        res.send({
-                                            score: formatScore(100 * (1 - abusiveTweets / totalTweets)),
-                                            abusiveCount: abusiveTweets
-                                        });
-                                        return;
-                                    } catch (e) {}
-                                }
-
-                                loop(index+1)
-                            });
-
-                        }), 500, index);
-                    }
-                })
-            }
-
-            loop(0)
-
-        } else {
-            try {
-                res.send({
-                    success: false,
-                    message: 'Error with Twitter API'
-                });
-            } catch (e) {}
-        }
-    });
+		var femaleCount = 0;
+		var priorAbuse = 0;
+		pgclient.query("select * from users where emailid = '' OR phonenumber = '' OR twitterhandle = ''", function(e1, r1) {
+			if (!e1 && r1.rows.length > 0) {
+				possibleNames = [r1.rows[0]['emailid'], r1.rows[0]['phonenumber'], r1.rows[0]['twitterhandle']];
+				pgclient.query("select * from harassment_reports where harasser in $1", [possibleNames], function(e2, r2) {
+					if (!e2 && r2.rows.length > 0) {
+						for ( z = 0 ; z < r2.rows.length ; z++) {
+							if (r2.rows[z]['is_female'] == 'true') {
+								femaleCount ++;
+							}
+						}
+						priorAbuse = r2.rows.length;
+						calculateScore(params, res, priorAbuse, femaleCount);
+					}
+					else {
+						calculateScore(params, res, priorAbuse, femaleCount);
+					}
+				});
+			}
+			else {
+				calculateScore(params, res, priorAbuse, femaleCount);
+			}
+		});
 });
 
 

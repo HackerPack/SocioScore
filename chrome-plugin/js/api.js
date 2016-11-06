@@ -42,13 +42,27 @@ var api = {
 		});
 	},
 
-	"registerNewUser" : function(name, email, phone, twitter, callback) {
+	"registerNewUser" : function(name, email, phone, twitter, gender, callback) {
 		$.ajax({
 			'url' : hostaddress + 'addUser',
 			'type' : 'post',
-			'data' : {'name' : name, 'phoneNumber' : phone, 'email' : email, 'twitterHandle':twitter },
+			'data' : {'name' : name, 'phoneNumber' : phone, 'email' : email, 'twitterHandle':twitter, 'gender' : gender },
 			success : function(data) {
 				if (data == "new user added successfully") {
+					callback({success : true});
+				}
+			},
+			error : function(data) { console.log(data);callback({success:false}) }
+		});
+	},
+
+	"reportHarassment" :function(victim, user, gender, desc, callback) {
+		$.ajax({
+			'url' : hostaddress + 'addHarassment',
+			'type' : 'post',
+			'data' : {'harasser' : user, 'victim' : victim, 'description':desc, 'isfemale' : (gender == 'female')},
+			success : function(data) {
+				if (data == "success") {
 					callback({success : true});
 				}
 			},
