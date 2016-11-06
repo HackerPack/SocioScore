@@ -9,6 +9,10 @@ $(document).ready(function() {
     $("#popup_report").show();
     $("#popup_register").hide();
   }
+  else {
+    $("#popup_report").hide();
+    $("#popup_register").show();
+  }
 
   $("#registerButton").on("click", function() {
     var name = $("#register_name").val();
