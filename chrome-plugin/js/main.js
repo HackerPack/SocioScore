@@ -1,10 +1,10 @@
 var userScores = {};
 setTimeout(function() {
-	window.setInterval(function(){
+	// window.setInterval(function(){
 		processUserNames();
 		processPage();
 		processTweets();
-	}, 1000);
+	// }, 1000);
 }, 2000);
 
 
@@ -117,13 +117,19 @@ function renderPopup(data){
 function processTweets() {
 	var tweetsLi = $("li[data-item-type='tweet']");
 	var data = [];
-	$.each(tweetsLi, function(i, val) {
+
+	for (var i = 0; i < tweetsLi.length; i++) {
+		var  val = tweetsLi[i];
 		var tid = $(val).attr('data-item-id');
 		var tweetText = $($('.tweet-text')[i]).text();
 		var userid = $($(".username.js-action-profile-name")[i]).text();
 		data.push({"tweet_id" : tid, "tweet" : tweetText, "user_id" : userid});
-	});
+	}
 
+	console.log('THe check tweets array is:')
+	console.log(data)
+
+	
 	api.getTweetAnalysis(data, function(response_data) {
 		$.each(response_data, function(i, v) {
 			var tid = v['tweet_id'];

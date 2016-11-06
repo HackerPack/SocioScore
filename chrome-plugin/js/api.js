@@ -28,10 +28,12 @@ var api = {
 	},
 
 	"getTweetAnalysis" : function(data, callback) {
+		console.log("the data in the api.js method is:")
+		console.log(data)
 		$.ajax({
 			'url' : hostaddress + 'checkTweets',
 			'type' : 'post',
-			'data' : data,
+			'data' : {'tweets' : data },
 			success : function(data) {
 				callback([{ tweet_id : data[0].tweet_id, abusive : true}]);
 			},
