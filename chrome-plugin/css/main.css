@@ -1,4 +1,4 @@
-.hoya-name{    
+.hoya-name{
 	color: white;
 	padding: 3px;
 	border-radius: 15px;
@@ -79,4 +79,33 @@
 
 .hoya-popup>.score.green{
 	background: #5cf436;
+}
+
+.hoya-blackbox {
+	background:black;
+	position:absolute;
+	top:0px;
+	width:100%;
+	height:100%;
+	z-index : 1000;
+}
+
+.displayMessage {
+	color:white;
+	font-size:20px;
+	padding-top:50px;
+	width:350px;
+	margin:auto;
+	text-align:center;
+}
+
+.showTweet {
+	background : #a60000;
+	padding:10px;
+	color:white;
+	width:150px;
+	margin:auto;
+	margin-top:50px;
+	text-align:center;
+	cursor:pointer;
 }
