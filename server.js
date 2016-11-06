@@ -6,9 +6,9 @@ var cors = require('cors')
 var log4js = require('log4js')
 var logger = log4js.getLogger()
 var bodyParser = require('body-parser');
-var nodemailer = require('nodemailer');
+var mailer = require('express-mailer');
 
-var transporter = nodemailer.createTransport('smtps://user%40gmail.com:pass@smtp.gmail.com');
+
 
 var databasePort = process.env.CSDBPORT || 5432
 var databaseName = 'trollwall' //process.env.CSDBNAME || ''
@@ -41,6 +41,18 @@ app.listen(3000, function() {
     logger.info('Example app listening on port 3000!')
 })
 
+mailer.extend(app, {
+    from: 'rakeshkumarwashere@gmail.com',
+    host: 'smtp.gmail.com', // hostname 
+    secureConnection: true, // use SSL 
+    port: 465, // port for secure SMTP 
+    transportMethod: 'SMTP', // default is SMTP. Accepts anything that nodemailer accepts 
+    auth: {
+        user: 'rakeshkumarwashere@gmail.com',
+        pass: 'DAVps-2005'
+    }
+});
+
 
 
 
@@ -58,7 +70,7 @@ pgclient.query("select phonenumber,emailid from users", function(error, result) 
             phoneEmailids.push(result.rows[i])
     }
 
-    logger.info(JSON.stringify(phoneEmailids))
+    // logger.info(JSON.stringify(phoneEmailids))
     handleStreams(phoneEmailids)
 })
 
@@ -207,10 +219,11 @@ app.post('/addUser', function(req, res) {
     var phoneNumber = req.body.phoneNumber || ''
     var emailid = req.body.email || ''
     var twitterHandle = req.body.twitterHandle || ''
-
+    var gender = req.bosy.gender || ''
+    var race = req.body.race || ''
 
     console.log(phoneNumber)
-    pgclient.query("insert into users (name, emailid, phonenumber, twitterhandle) values ($1, $2, $3, $4)", [name, emailid, phoneNumber, twitterHandle], function(error, response) {
+    pgclient.query("insert into users (name, emailid, phonenumber, twitterhandle, gender, race) values ($1, $2, $3, $4, $5, $6)", [name, emailid, phoneNumber, twitterHandle, gender, race], function(error, response) {
         console.log(response)
         if (error) {
             res.send(error)
@@ -266,7 +279,7 @@ app.get('/checkTweet', function(req, res) {
 })
 
 function formatScore(score) {
-    return score.toFixed(2)
+    return score.toFixed(0)
 }
 
 app.get('/score/twitter/', function(request, res) {
@@ -308,10 +321,10 @@ app.get('/score/twitter/', function(request, res) {
                     // logger.info(result);
                     if (!error && result.rows.length > 0) {
                         // logger.info('user tweet found in db ')
-                            // index++
+                        // index++
                         // logger.info(result.rows[0].abusive)
                         // logger.info()
-                         logger.info(result.rows[0].abusive, typeof result.rows[0].abusive, result.rows[0].abusive == 'true')
+                        logger.info(result.rows[0].abusive, typeof result.rows[0].abusive, result.rows[0].abusive == 'true')
                         if (result.rows[0].abusive == 'true')
                             abusiveTweets++
 
@@ -334,7 +347,7 @@ app.get('/score/twitter/', function(request, res) {
 
                     } else {
                         setTimeout((function(index) {
-                          
+
                             checkTweets(tweets[index].text, function(barkResponse) {
                                 // logger.info('inside the ekse part')
                                 // logger.info(tweets[index].text)
@@ -343,16 +356,16 @@ app.get('/score/twitter/', function(request, res) {
                                     pgclient.query("insert into tweets (id, abusive) values ($1, $2)", [tweets[index].id, barkResponse.message], function(error, result) {
                                         if (!error) {
                                             // logger.info('inserted user tweet into db')
-                                                //logger.info(error)
+                                            //logger.info(error)
                                         } else {
                                             // logger.info('couldnt insert user  tweet into db')
-                                                //logger.info(error)
+                                            //logger.info(error)
                                         }
                                     })
 
                                 }
 
-                                
+
                                 if (barkResponse.success && barkResponse.message) {
                                     abusiveTweets++;
                                 }
@@ -369,15 +382,15 @@ app.get('/score/twitter/', function(request, res) {
                                         return;
                                     } catch (e) {}
                                 }
-                            
-                                loop(index+1)
+
+                                loop(index + 1)
                             });
-                        
+
                         }), 500, index);
                     }
                 })
             }
-        
+
             loop(0)
 
         } else {
@@ -415,36 +428,37 @@ function handleStreams(phoneEmailids) {
 
     // logger.info(phones)
 
-    // client.stream('statuses/filter', {
-    //     track: phones.join()
-    // }, function(stream) {
-    //     stream.on('data', function(event) {
-    //         logger.info("data captured from stream")
-    //             // logger.info(event)
-    //         var mailOptions = {
-    //             from: 'rakeshkumarwashere@gmail.com', // sender address 
-    //             to: 'rsukuma2@ncsu.edu', // list of receivers 
-    //             subject: 'Phone number exposed', // Subject line 
-    //             text: 'Your phone number was exposed and tweeted. Click here to see the tweet ' + "https://twitter.com/statuses/" + event.id_str, // plaintext body 
-    //             // html: '<b>Hello world 🐴</b>' // html body    
-    //         };
+    client.stream('statuses/filter', {
+        track: phones.join()
+    }, function(stream) {
+        stream.on('data', function(event) {
+            logger.info("data captured from stream")
+                // logger.info(event)
+            app.mailer.send("https://twitter.com/statuses/" + event.id_str, {
+                to: 'rsukuma2@ncsu.edu', // REQUIRED. This can be a comma delimited string just like a normal email to field.  
+                subject: 'Test Email', // REQUIRED. 
+                // otherProperty: 'Other Property' // All additional properties are also passed to the template as local variables. 
+            }, function(err) {
+                if (err) {
+                    // handle error 
+                    console.log(err);
+                    res.send('There was an error sending the email');
+                    return;
+                }
 
-    //         transporter.sendMail(mailOptions, function(error, info) {
-    //             if (error) {
-    //                 return console.log(error);
-    //             }
-    //             console.log('Message sent: ' + info.response);
-    //         });
+                logger.info('email sent')
+                // res.send('Email Sent');
+            });
 
-    //         logger.info("The URL of the tweet is " + "https://twitter.com/statuses/" + event.id_str)
-    //         logger.info(event && event.text);
-    //     });
+            logger.info("The URL of the tweet is " + "https://twitter.com/statuses/" + event.id_str)
+            logger.info(event && event.text);
+        });
 
-    //     stream.on('error', function(error) {
-    //         // throw error;
-    //         logger.info(error)
-    //     });
-    // });
+        stream.on('error', function(error) {
+            // throw error;
+            logger.info(error)
+        });
+    });
 
 }
 
