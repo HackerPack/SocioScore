@@ -1,1 +1,9 @@
 .DS_Store
+SocioScore_android/*.iml
+SocioScore_android/.gradle
+SocioScore_android/local.properties
+SocioScore_android/.idea/workspace.xml
+SocioScore_android/.idea/libraries
+SocioScore_android/.DS_Store
+SocioScore_android/build
+SocioScore_android/captures
